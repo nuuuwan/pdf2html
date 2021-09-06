@@ -25,3 +25,4 @@
   * Updated README
   * Added pdf2image
   * Mostly done
+  * Pre-Merge
