@@ -1,0 +1,36 @@
+
+name: PyPi Deploy
+
+on: workflow_dispatch
+
+jobs:
+  deploy-to-pypi:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.7'
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}
+
+    - name: Test
+      uses: nuuuwan/python-repo-test@v1
+
+    - name: Build package
+      run: python -m build
+
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      with:
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_PASSWORD }}
