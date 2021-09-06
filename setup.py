@@ -32,5 +32,6 @@ setuptools.setup(
         'selenium',
         'tweepy',
         'utils-nuuuwan',
+        'pdf2image',
     ],
 )
