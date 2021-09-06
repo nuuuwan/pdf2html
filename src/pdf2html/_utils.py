@@ -33,3 +33,9 @@ def get_dir_url(url):
     if not os.path.exists(dir):
         os.mkdir(dir)
     return dir
+
+
+def get_file(url, pdf_url, prefix_ext):
+    dir_url = get_dir_url(url)
+    pdf_hash = hashx.md5(pdf_url)[:8]
+    return os.path.join(dir_url, f'{pdf_hash}.{prefix_ext}')

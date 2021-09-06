@@ -18,3 +18,12 @@ tr, td, th {
 a {
   text-decoration: none;
 }
+
+.a-pdf-url-missing {
+  color: lightgray;
+}
+
+.a-pdf-url-exists {
+  color: orange;
+  margin-left: 12px;
+}

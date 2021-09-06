@@ -3,19 +3,13 @@ import os
 import xml.etree.ElementTree as ET
 
 import camelot
-from utils import filex, hashx, www
+from utils import filex, www
 
-from pdf2html._utils import get_dir_url, log
+from pdf2html._utils import get_file, log
 
 PAGES = 'all'
 WHITESPACE_LIMIT = 45
 logging.getLogger('pdfminer').setLevel(logging.WARNING)
-
-
-def get_file(url, pdf_url, prefix_ext):
-    dir_url = get_dir_url(url)
-    pdf_hash = hashx.md5(pdf_url)[:8]
-    return os.path.join(dir_url, f'{pdf_hash}.{prefix_ext}')
 
 
 def download_pdf(url, pdf_url):
@@ -90,7 +84,7 @@ def build_html(url, pdf_url):
                     ET.SubElement(_row, 'td').text = cell
 
     html = ET.tostring(_html).decode()
-    complete_html_file = get_file(url, pdf_url, 'complete.html')
+    complete_html_file = get_file(url, pdf_url, 'html')
     filex.write(complete_html_file, html)
     log.info(f'Wrote HTML to {complete_html_file}')
 
