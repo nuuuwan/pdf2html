@@ -1,4 +1,5 @@
 import os
+import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
 from utils import ds, filex, www
@@ -30,20 +31,29 @@ def get_pdf_links(url):
 def build_contents(url):
     pdf_links = get_pdf_links(url)
 
-    def render_pdf_link(pdf_link):
-        short_name = pdf_link.split('/')[-1]
-        return f'* [{short_name}]({pdf_link})'
-
-    md_lines = [f'# [{url}]({url})', ] + list(
-        map(
-            render_pdf_link,
-            pdf_links,
-        )
+    _html = ET.Element('html')
+    _head = ET.SubElement(_html, 'head')
+    ET.SubElement(
+        _head,
+        'link',
+        {
+            'rel': 'stylesheet',
+            'href': '../styles.css',
+        },
     )
+    _body = ET.SubElement(_html, 'body')
+    ET.SubElement(_body, 'h1').text = url
+    _ul = ET.SubElement(_body, 'ul')
+    for pdf_link in pdf_links:
+        short_name = pdf_link.split('/')[-1]
+        _li = ET.SubElement(_ul, 'li')
+        ET.SubElement(_li, 'a', {'href': pdf_link}).text = short_name
+
+    html = ET.tostring(_html).decode()
     dir_url = get_dir_url(url)
-    md_file = os.path.join(dir_url, 'README.md')
-    filex.write(md_file, '\n'.join(md_lines))
-    log.info(f'Wrote contents for "{url}" to {md_file}')
+    html_file = os.path.join(dir_url, 'index.html')
+    filex.write(html_file, html)
+    log.info(f'Wrote contents for "{url}" to {html_file}')
 
 
 if __name__ == '__main__':

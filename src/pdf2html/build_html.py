@@ -1,12 +1,11 @@
 import logging
 import os
-import shutil
 import xml.etree.ElementTree as ET
 
 import camelot
 from utils import filex, hashx, www
 
-from pdf2html._utils import CSS_FILE, DIR_ROOT, get_dir_url, log
+from pdf2html._utils import get_dir_url, log
 
 PAGES = 'all'
 WHITESPACE_LIMIT = 45
@@ -67,7 +66,6 @@ def build_html(url, pdf_url):
         rows = table.df.values.tolist()
 
         _table = ET.SubElement(_body, 'table')
-        print(rows)
         for row in rows:
             max_act_rows = 1
             for cell in row:
@@ -77,7 +75,6 @@ def build_html(url, pdf_url):
                     len(cell_parts),
                 )
             act_rows = []
-            print(max_act_rows)
             for i in range(0, max_act_rows):
                 act_row = []
                 for cell in row:
@@ -96,13 +93,6 @@ def build_html(url, pdf_url):
     complete_html_file = get_file(url, pdf_url, 'complete.html')
     filex.write(complete_html_file, html)
     log.info(f'Wrote HTML to {complete_html_file}')
-    shutil.copy2(
-        CSS_FILE,
-        os.path.join(
-            DIR_ROOT,
-            'styles.css',
-        ),
-    )
 
 
 if __name__ == '__main__':

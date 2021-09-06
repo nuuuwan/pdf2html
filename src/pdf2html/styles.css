@@ -1,5 +1,5 @@
 body {
-  font-family: Futura;
+  font-family: sans-serif;
 }
 
 table {
@@ -13,4 +13,8 @@ tr, td, th {
   padding: 3px;
   border: 1px solid lightgray;
   text-align: right;
+}
+
+a {
+  text-decoration: none;
 }
