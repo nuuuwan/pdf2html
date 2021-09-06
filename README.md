@@ -24,3 +24,4 @@
 * [2021-09-06 04:25PM] Extract Images from PDFs
   * Updated README
   * Added pdf2image
+  * Mostly done

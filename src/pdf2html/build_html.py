@@ -3,9 +3,10 @@ import os
 import xml.etree.ElementTree as ET
 
 import camelot
+from pdf2image import convert_from_path
 from utils import filex, www
 
-from pdf2html._utils import get_file, log
+from pdf2html._utils import get_file, log, get_data_type
 
 PAGES = 'all'
 WHITESPACE_LIMIT = 45
@@ -47,8 +48,10 @@ def build_html(url, pdf_url):
     _p = ET.SubElement(_body, 'p')
     _p.text = 'Source: '
     ET.SubElement(_p, 'a', {'href': pdf_url}).text = pdf_url
+    _div_page = ET.SubElement(_body, 'div', {'class': 'div-page'})
 
     prev_page = None
+    i_table1 = 0
     for i_table, table in enumerate(tables):
         report = table.parsing_report
         if report['whitespace'] > WHITESPACE_LIMIT:
@@ -56,10 +59,19 @@ def build_html(url, pdf_url):
         page = report['page']
         if prev_page != page:
             ET.SubElement(_body, 'h4').text = f'Page {page}'
+            i_image1 = (int)(page)
+            image_file = get_file(url, pdf_url, f'page-{i_image1:04d}.png')
+            ET.SubElement(_body, 'img', {'src': image_file})
             prev_page = page
-        rows = table.df.values.tolist()
+            i_table1 = 0
+            _div_page = ET.SubElement(_body, 'div', {'class': 'div-page'})
 
-        _table = ET.SubElement(_body, 'table')
+        rows = table.df.values.tolist()
+        i_table1 += 1
+
+        _table = ET.SubElement(_div_page, 'table')
+        ET.SubElement(_table, 'caption').text = f'Table {i_table1} - Page {page}'
+
         for row in rows:
             max_act_rows = 1
             for cell in row:
@@ -81,12 +93,26 @@ def build_html(url, pdf_url):
             for act_row in act_rows:
                 _row = ET.SubElement(_table, 'tr')
                 for cell in act_row:
-                    ET.SubElement(_row, 'td').text = cell
+                    class_ = 'td-' + get_data_type(cell)
+                    ET.SubElement(_row, 'td', {'class': class_}).text = cell
 
     html = ET.tostring(_html).decode()
     complete_html_file = get_file(url, pdf_url, 'html')
     filex.write(complete_html_file, html)
     log.info(f'Wrote HTML to {complete_html_file}')
+
+    download_images(url, pdf_url)
+
+
+def download_images(url, pdf_url):
+    pdf_file = get_file(url, pdf_url, 'pdf')
+    log.info(f'Downloading images for {pdf_file}')
+    images = convert_from_path(pdf_file)
+    for i_image, image in enumerate(images):
+        i_image1 = i_image + 1
+        image_file = get_file(url, pdf_url, f'page-{i_image1:04d}.png')
+        image.save(image_file, 'png')
+        log.info(f'Downloaded images {image_file}')
 
 
 if __name__ == '__main__':

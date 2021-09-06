@@ -4,7 +4,7 @@ body {
 
 table {
   border-collapse: collapse;
-  width: 50%;
+  max-width: 50%;
   border: 1px solid gray;
   font-size: 9px;
   margin: 12px;
@@ -14,6 +14,13 @@ tr, td, th {
   padding: 3px;
   border: 1px solid lightgray;
   text-align: right;
+  background: #f8f8f8;
+}
+
+img {
+  max-width: 33%;
+  float: left;
+  margin-right: 12px;
 }
 
 a {
@@ -27,4 +34,27 @@ a {
 .a-pdf-url-exists {
   color: orange;
   margin-left: 12px;
+}
+
+
+.td-int {
+  color: brown;
+}
+
+.td-percent {
+  color: red;
+}
+
+.td-float {
+  color: purple;
+}
+
+.td-unknown {
+  font-weight: bold;
+  background: #f0f0f0;
+
+}
+
+.div-page {
+  margin: 24px;
 }

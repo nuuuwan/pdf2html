@@ -39,3 +39,16 @@ def get_file(url, pdf_url, prefix_ext):
     dir_url = get_dir_url(url)
     pdf_hash = hashx.md5(pdf_url)[:8]
     return os.path.join(dir_url, f'{pdf_hash}.{prefix_ext}')
+
+def get_data_type(x):
+    try:
+        int_x = (int)(x)
+        return 'int'
+    except ValueError:
+        try:
+            float_x = (float)(x)
+            return 'float'
+        except ValueError:
+            if '%' in x:
+                return 'percent'
+    return 'unknown'

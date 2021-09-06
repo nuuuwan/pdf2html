@@ -56,9 +56,10 @@ def build_contents(url):
         if os.path.exists(html_file):
             class_ = 'a-pdf-url-exists'
             ET.SubElement(
-                _li, 'a', {'href': html_file_only, 'class': class_, 'target': '_blank'}
+                _li,
+                'a',
+                {'href': html_file_only, 'class': class_, 'target': '_blank'},
             ).text = ' (📃 tables as HTML)'
-
 
     html = ET.tostring(_html).decode()
     dir_url = get_dir_url(url)

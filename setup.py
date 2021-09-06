@@ -28,10 +28,10 @@ setuptools.setup(
     install_requires=[
         'bs4',
         'camelot-py[cv]',
+        'pdf2image',
         'pytest',
         'selenium',
         'tweepy',
         'utils-nuuuwan',
-        'pdf2image',
     ],
 )
