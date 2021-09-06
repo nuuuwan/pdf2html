@@ -27,10 +27,10 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
         'bs4',
+        'camelot-py[cv]',
         'pytest',
         'selenium',
         'tweepy',
         'utils-nuuuwan',
-        'camelot-py[cv]',
     ],
 )
