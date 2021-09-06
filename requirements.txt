@@ -1,5 +1,6 @@
 # Auto Generated
 bs4
+camelot-py[cv]
 pytest
 selenium
 tweepy

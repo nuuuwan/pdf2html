@@ -31,5 +31,6 @@ setuptools.setup(
         'selenium',
         'tweepy',
         'utils-nuuuwan',
+        'camelot-py[cv]',
     ],
 )

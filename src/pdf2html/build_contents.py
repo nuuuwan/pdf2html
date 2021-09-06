@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 from utils import www, ds, filex, dt, hashx
 
 from pdf2html._utils import log
+
 DIR = '/tmp/pdf2html'
 N_HASH = 8
+
 
 def parse_url(url):
     url_parts = urlparse(url)
@@ -15,6 +17,7 @@ def parse_url(url):
         root=root,
         netloc=url_parts.netloc,
     )
+
 
 def get_dir_url(url):
     url_parts = parse_url(url)
@@ -48,6 +51,7 @@ def get_pdf_links(url):
     log.info(f'Found {n_pdf_links} for {url}')
     return pdf_links
 
+
 def build_contents(url):
     pdf_links = get_pdf_links(url)
 
@@ -55,18 +59,16 @@ def build_contents(url):
         short_name = pdf_link.split('/')[-1]
         return f'* [{short_name}]({pdf_link})'
 
-    md_lines = [
-        f'# [{url}]({url})',
-    ] + list(map(
-        render_pdf_link,
-        pdf_links,
-    ))
+    md_lines = [f'# [{url}]({url})', ] + list(
+        map(
+            render_pdf_link,
+            pdf_links,
+        )
+    )
     dir_url = get_dir_url(url)
     md_file = os.path.join(dir_url, 'README.md')
     filex.write(md_file, '\n'.join(md_lines))
     log.info(f'Wrote contents for "{url}" to {md_file}')
-
-
 
 
 if __name__ == '__main__':
