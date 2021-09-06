@@ -1,34 +1,9 @@
 import os
 
-from urllib.parse import urlparse
 from bs4 import BeautifulSoup
-from utils import www, ds, filex, dt, hashx
+from utils import ds, filex, www
 
-from pdf2html._utils import log
-
-DIR = '/tmp/pdf2html'
-N_HASH = 8
-
-
-def parse_url(url):
-    url_parts = urlparse(url)
-    root = url_parts.scheme + '://' + url_parts.netloc
-    return dict(
-        root=root,
-        netloc=url_parts.netloc,
-    )
-
-
-def get_dir_url(url):
-    url_parts = parse_url(url)
-    netloc = url_parts['netloc']
-    dir_only = dt.to_kebab(netloc) + '-' + hashx.md5(url)[:N_HASH]
-    dir = os.path.join(DIR, dir_only)
-    if not os.path.exists(DIR):
-        os.mkdir(DIR)
-    if not os.path.exists(dir):
-        os.mkdir(dir)
-    return dir
+from pdf2html._utils import get_dir_url, log, parse_url
 
 
 def get_pdf_links(url):
@@ -72,9 +47,9 @@ def build_contents(url):
 
 
 if __name__ == '__main__':
-    url = os.path.join(
+    URL = os.path.join(
         'https://www.epid.gov.lk',
         'web/index.php?',
         'option=com_content&view=article&id=233&lang=en',
     )
-    build_contents(url)
+    build_contents(URL)
