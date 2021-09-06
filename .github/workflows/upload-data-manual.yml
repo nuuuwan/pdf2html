@@ -27,7 +27,7 @@ jobs:
     - name: Run - Upload Data
       run: |
         export PYTHONPATH="$PYTHONPATH:./src"
-        python src/gh_template_py/upload_data.py
+        python src/pdf2html/upload_data.py
 
     - name: Checkout repo branch data
       uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
       run: |
         git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
         git config --global user.name "${{ secrets.GIT_USER_NAME }}"
-        cp /tmp/gh_template_py.* .
+        cp /tmp/pdf2html.* .
         echo "* $(date)" >> update.log
         git add .
         git commit -m "Updated data $(date)"
