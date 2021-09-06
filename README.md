@@ -21,3 +21,5 @@
   * contents complete
   * Added margin: 12px; to table
   * Done
+* [2021-09-06 04:25PM] Extract Images from PDFs
+  * Updated README
