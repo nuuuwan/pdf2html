@@ -1,7 +1,0 @@
-# Auto Generated
-bs4
-camelot-py[cv]
-pytest
-selenium
-tweepy
-utils-nuuuwan
