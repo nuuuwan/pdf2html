@@ -6,3 +6,4 @@
   * Basic changes
   * Lint
   * Renamed files
+  * build contents complete
