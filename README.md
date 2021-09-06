@@ -19,3 +19,4 @@
   * Pre-Merge
   * Added init
   * contents complete
+  * Added margin: 12px; to table
