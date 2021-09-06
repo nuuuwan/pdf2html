@@ -3,6 +3,7 @@ import os
 import shutil
 
 import camelot
+import matplotlib.pyplot as plt
 from utils import filex, hashx, www
 
 from pdf2html._utils import CSS_FILE, DIR_ROOT, get_dir_url, log
@@ -31,7 +32,8 @@ def download_pdf(url, pdf_url):
 def build_html(url, pdf_url):
     log.info(f'Building HTML for "{pdf_url}"')
     pdf_file = download_pdf(url, pdf_url)
-    tables = camelot.read_pdf(pdf_file, pages='all')
+    tables = camelot.read_pdf(
+        pdf_file, pages='all')
     n_tables = len(tables)
     log.info(f'Extracted {n_tables} table(s) from {pdf_file}')
 
@@ -40,23 +42,43 @@ def build_html(url, pdf_url):
     prev_page = None
     for i_table, table in enumerate(tables):
         report = table.parsing_report
+        if report['whitespace'] > 50:
+            continue
         page = report['page']
-
         if prev_page != page:
             inner_html += f'<h4>Page {page}</h1>'
             prev_page = page
 
+        rows = table.df.values.tolist()
+        rendered_rows = ''
+        for row in rows:
+            rendered_cells = ''
+            for cell in row:
+                cell_parts = cell.split('\n')
+                rendered_cell_parts = ''
+                for cell_part in cell_parts:
+                    rendered_cell_parts += f'''
+                        <div>
+                            {cell_part}
+                        </div>
+                    '''
+                rendered_cells += f'''
+                    <td>
+                        {rendered_cell_parts}
+                    </td>
+                '''
+            rendered_rows += f'''
+                <tr>
+                    {rendered_cells}
+                </tr>
+            '''
+
         inner_html += str(table.parsing_report)
-
-        csv_file = get_file(url, pdf_url, f'{i_table}.csv')
-        table.to_csv(csv_file)
-        log.info(f'Saved table to {csv_file}')
-
-        html_file = get_file(url, pdf_url, f'{i_table}.html')
-        table.to_html(html_file)
-
-        html_for_table = filex.read(html_file)
-        inner_html += html_for_table
+        inner_html += f'''
+<table>
+    {rendered_rows}
+</table>
+        '''
 
     complete_html = f'''
 <html>
