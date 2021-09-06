@@ -1,13 +1,15 @@
 import logging
 import os
 import shutil
+import xml.etree.ElementTree as ET
 
 import camelot
-import matplotlib.pyplot as plt
 from utils import filex, hashx, www
 
 from pdf2html._utils import CSS_FILE, DIR_ROOT, get_dir_url, log
 
+PAGES = 'all'
+WHITESPACE_LIMIT = 45
 logging.getLogger('pdfminer').setLevel(logging.WARNING)
 
 
@@ -32,73 +34,67 @@ def download_pdf(url, pdf_url):
 def build_html(url, pdf_url):
     log.info(f'Building HTML for "{pdf_url}"')
     pdf_file = download_pdf(url, pdf_url)
-    tables = camelot.read_pdf(
-        pdf_file, pages='all')
+    tables = camelot.read_pdf(pdf_file, pages=PAGES)
     n_tables = len(tables)
     log.info(f'Extracted {n_tables} table(s) from {pdf_file}')
 
+    _html = ET.Element('html')
+    _head = ET.SubElement(_html, 'head')
+    ET.SubElement(
+        _head,
+        'link',
+        {
+            'rel': 'stylesheet',
+            'href': '../styles.css',
+        },
+    )
+    _body = ET.SubElement(_html, 'body')
     short_name = pdf_url.split('/')[-1]
-    inner_html = ''
+    ET.SubElement(_body, 'h1').text = short_name
+    _p = ET.SubElement(_body, 'p')
+    _p.text = 'Source: '
+    ET.SubElement(_p, 'a', {'href': pdf_url}).text = pdf_url
+
     prev_page = None
     for i_table, table in enumerate(tables):
         report = table.parsing_report
-        if report['whitespace'] > 50:
+        if report['whitespace'] > WHITESPACE_LIMIT:
             continue
         page = report['page']
         if prev_page != page:
-            inner_html += f'<h4>Page {page}</h1>'
+            ET.SubElement(_body, 'h4').text = f'Page {page}'
             prev_page = page
-
         rows = table.df.values.tolist()
-        rendered_rows = ''
+
+        _table = ET.SubElement(_body, 'table')
+        print(rows)
         for row in rows:
-            rendered_cells = ''
+            max_act_rows = 1
             for cell in row:
                 cell_parts = cell.split('\n')
-                rendered_cell_parts = ''
-                for cell_part in cell_parts:
-                    rendered_cell_parts += f'''
-                        <div>
-                            {cell_part}
-                        </div>
-                    '''
-                rendered_cells += f'''
-                    <td>
-                        {rendered_cell_parts}
-                    </td>
-                '''
-            rendered_rows += f'''
-                <tr>
-                    {rendered_cells}
-                </tr>
-            '''
+                max_act_rows = max(
+                    max_act_rows,
+                    len(cell_parts),
+                )
+            act_rows = []
+            print(max_act_rows)
+            for i in range(0, max_act_rows):
+                act_row = []
+                for cell in row:
+                    cell_parts = cell.split('\n')
+                    for i_cell_part, cell_part in enumerate(cell_parts):
+                        if i_cell_part == i:
+                            act_row.append(cell_part)
 
-        inner_html += str(table.parsing_report)
-        inner_html += f'''
-<table>
-    {rendered_rows}
-</table>
-        '''
+                act_rows.append(act_row)
+            for act_row in act_rows:
+                _row = ET.SubElement(_table, 'tr')
+                for cell in act_row:
+                    ET.SubElement(_row, 'td').text = cell
 
-    complete_html = f'''
-<html>
-    <head>
-        <link rel="stylesheet" href="../styles.css">
-    </head>
-    <body>
-        <h1>{short_name}</h1>
-        <p>
-            Source:
-            <a href="{pdf_url}">
-                {pdf_url}
-            </a>
-        </p>
-        {inner_html}
-    </body>
-</html>
-    '''
+    html = ET.tostring(_html).decode()
     complete_html_file = get_file(url, pdf_url, 'complete.html')
-    filex.write(complete_html_file, complete_html)
+    filex.write(complete_html_file, html)
     log.info(f'Wrote HTML to {complete_html_file}')
     shutil.copy2(
         CSS_FILE,
